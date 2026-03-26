@@ -1,76 +1,78 @@
-import java.util.*;
+# 🖥️ OS System Call Interface
 
-public class SecureSystemCallInterface {
+An interactive and user-friendly web-based interface that simulates an Operating System (OS) terminal with role-based login, command execution, and permission management.
 
-    private static Map<String, String> userDatabase = new HashMap<>();
-    private static List<String> systemCallLogs = new ArrayList<>();
+## 🚀 Features
 
-    static {
-        // Initialize with some users
-        userDatabase.put("admin", "password123");
-        userDatabase.put("user1", "pass1");
-        userDatabase.put("user2", "securePass2");
-        userDatabase.put("guest", "guest123");
-    }
+- 🔐 **Secure Login** with Username, Email, Password & OTP verification via EmailJS  
+- 👤 **Role-Based Access**: Supports **Admin**, **User**, and **Guest** roles
+- 💬 **Command Execution**:
+  - Basic commands (`ls`, `pwd`, `ps`, etc.) available to all users
+  - Advanced system call commands based on user permissions (e.g., `fork`, `exec`, `mmap`)
+- ⚙️ **Admin Controls**:
+  - Add or remove users
+  - Change permissions (basic and command-based)
+- 📊 **System Monitoring** (CPU, Memory, Disk usage - simulated)
+- 💡 **Command Search with Suggestions**
+- 🛡️ **Security Features**:
+  - OTP-based login verification
+  - Inactivity logout
+  - Right-click disabled
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+## 📁 Project Structure
 
-        System.out.println("--- Secure System Call Interface ---");
+```
+📁 OS-System-Call-Interface
+├── index.html         # Main HTML structure
+├── styles.css         # Styling with dark terminal theme
+└── script.js          # Full application logic including login, command processing, and admin features
+```
 
-        System.out.print("Enter Username: ");
-        String username = scanner.nextLine();
+## ⚙️ Technologies Used
 
-        System.out.print("Enter Password: ");
-        String password = scanner.nextLine();
+- HTML5, CSS3, JavaScript
+- Font Awesome for Icons
+- EmailJS for OTP Email Verification
 
-        if (authenticateUser(username, password)) {
-            System.out.println("Authentication Successful!");
-            System.out.println("1. Perform System Call\n2. View Logs\n3. Exit");
+## 🔐 Default Users
 
-            while (true) {
-                System.out.print("Enter your choice: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+You can log in using the following default credentials:
 
-                if (choice == 1) {
-                    performSystemCall(username);
-                } else if (choice == 2) {
-                    viewLogs();
-                } else if (choice == 3) {
-                    System.out.println("Exiting...");
-                    break;
-                } else {
-                    System.out.println("Invalid choice. Try again.");
-                }
-            }
-        } else {
-            System.out.println("Authentication Failed. Access Denied.");
-        }
+| Username | Password  | Role  |
+|----------|-----------|-------|
+| admin    | admin123  | Admin |
+| user1    | user123   | User  |
+| user2    | user456   | User  |
 
-        scanner.close();
-    }
+## 📦 Setup Instructions
 
-    private static boolean authenticateUser(String username, String password) {
-        return userDatabase.containsKey(username) && userDatabase.get(username).equals(password);
-    }
+1. **Clone or Download** this repository.
+2. Open `index.html` in any modern browser.
+3. Use one of the default users to log in or sign up as a new user (admin-only).
+4. OTP email verification will be sent via EmailJS – configure your own EmailJS account for full functionality.
 
-    private static void performSystemCall(String username) {
-        // Example system call
-        String systemCall = "Checked Disk Space";
-        logSystemCall(username, systemCall);
-        System.out.println("System Call Performed: " + systemCall);
-    }
+### 📧 EmailJS Setup
 
-    private static void logSystemCall(String username, String action) {
-        String logEntry = "User: " + username + " | Action: " + action + " | Timestamp: " + new Date().toString();
-        systemCallLogs.add(logEntry);
-    }
+To enable OTP email verification:
+- Replace the placeholder values in `script.js`:
+  ```js
+  const EMAILJS_CONFIG = {
+      serviceId: 'your_service_id',
+      templateId: 'your_template_id',
+      publicKey: 'your_public_key'
+  };
+  ```
+- Set up the corresponding EmailJS template and service.
 
-    private static void viewLogs() {
-        System.out.println("--- System Call Logs ---");
-        for (String log : systemCallLogs) {
-            System.out.println(log);
-        }
-    }
-}
+## 📝 Future Improvements
+
+- Backend integration for real system call execution
+- Persistent user data using database (e.g., Firebase or MongoDB)
+- Multi-language support
+- Mobile UI enhancements
+
+## 👨‍💻 Author
+
+Developed by **Shahil Bhardwaj | Sahil Ansari | Biprant**
+# User-Friendly-System-Call-Interface-Enhanced-Security
+# User-Friendly-System-Call-Interface-Enhanced-Security

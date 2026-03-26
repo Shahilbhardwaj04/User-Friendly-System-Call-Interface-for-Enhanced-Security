@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS System Call Interface</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div class="login-container" id="loginContainer">
+            <div class="login-box">
+                <h2>OS System Login</h2>
+                <div class="role-selector">
+                    <button class="role-btn active" data-role="user">User Login</button>
+                    <button class="role-btn" data-role="admin">Admin Login</button>
+                    <button class="role-btn" data-role="guest">Guest Access</button>
+                </div>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" placeholder="Username" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="login-btn">Login</button>
+                </form>
+                <div class="security-indicator">
+                    <div class="security-bar"></div>
+                    <span>Security Level: High</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Call Interface (Hidden by default) -->
+        <div class="system-interface" id="systemInterface" style="display: none;">
+            <div class="header">
+                <div class="terminal-header">
+                    <h1>OS Terminal Interface</h1>
+                    <div class="user-info">
+                        <span id="currentUser">User</span>
+                        <span id="userRole">Role</span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
+            </div>
+            
+            <div class="system-info">
+                <div class="info-card">
+                    <i class="fas fa-microchip"></i>
+                    <h3>CPU Usage</h3>
+                    <div class="progress-bar">
+                        <div class="progress" id="cpuProgress"></div>
+                    </div>
+                    <span id="cpuValue">0%</span>
+                </div>
+                
+                <div class="info-card">
+                    <i class="fas fa-memory"></i>
+                    <h3>Memory Usage</h3>
+                    <div class="progress-bar">
+                        <div class="progress" id="memoryProgress"></div>
+                    </div>
+                    <span id="memoryValue">0%</span>
+                </div>
+                
+                <div class="info-card">
+                    <i class="fas fa-hdd"></i>
+                    <h3>Disk Usage</h3>
+                    <div class="progress-bar">
+                        <div class="progress" id="diskProgress"></div>
+                    </div>
+                    <span id="diskValue">0%</span>
+                </div>
+            </div>
+
+            <div class="command-interface">
+                <div class="command-search">
+                    <div class="search-container">
+                        <input type="text" id="commandInput" placeholder="Enter system command (e.g., ls, pwd, ps)">
+                        <button id="executeBtn" class="execute-btn">Execute</button>
+                    </div>
+                    <div class="command-help">
+                        <input type="text" id="commandSearch" placeholder="Search for commands...">
+                        <div class="command-suggestions" id="commandSuggestions"></div>
+                    </div>
+                </div>
+                
+                <div class="command-output" id="commandOutput">
+                    <pre>Welcome to OS System Call Interface
+Type a command or select from the list below...</pre>
+                </div>
+
+                <div class="quick-commands">
+                    <h3>Quick Commands</h3>
+                    <div class="command-list" id="quickCommands">
+                        <!-- Commands will be populated based on user role -->
+                    </div>
+                </div>
+
+                <!-- Admin Only Section -->
+                <div class="admin-section" id="adminSection" style="display: none;">
+                    <h3>Admin Controls</h3>
+                    <div class="admin-commands">
+                        <button class="admin-btn" data-command="useradd" id="addUserBtn">Add User</button>
+                        <button class="admin-btn" data-command="userdel">Remove User</button>
+                        <button class="admin-btn" data-command="chmod">Change Permissions</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal" id="addUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New User</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label for="newUsername">Username</label>
+                        <input type="text" id="newUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newEmail">Email</label>
+                        <input type="email" id="newEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">Password</label>
+                        <input type="password" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userRole">Role</label>
+                        <select id="userRole" required>
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Basic Permissions</label>
+                        <div class="permissions-list">
+                            <label class="permission-item">
+                                <input type="checkbox" name="permissions" value="read" checked> Read
+                            </label>
+                            <label class="permission-item">
+                                <input type="checkbox" name="permissions" value="write"> Write
+                            </label>
+                            <label class="permission-item">
+                                <input type="checkbox" name="permissions" value="execute"> Execute
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Command Permissions</label>
+                        <div class="command-permissions">
+                            <div class="basic-commands">
+                                <h4>Basic Commands (Always Available)</h4>
+                                <div class="command-list">ls, pwd, ps, netstat, top, users</div>
+                            </div>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_processControl"> Process Control
+                                <span class="command-list">(fork, exec, wait, exit, getpid, getppid, nice)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_directoryManagement"> Directory Management
+                                <span class="command-list">(mkdir, rmdir, chdir, getcwd, opendir, readdir, closedir)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_ipc"> Inter-Process Communication
+                                <span class="command-list">(pipe, shmget, shmat, shmdt, msgget, msgsnd, msgrcv, semget, semop, socket, bind, connect, send, recv, listen, accept)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_deviceManagement"> Device Management
+                                <span class="command-list">(ioctl, mknod, read, write)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_infoMaintenance"> Information Maintenance
+                                <span class="command-list">(gettimeofday, time, uname, getrlimit, setrlimit, sysinfo)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_memoryManagement"> Memory Management
+                                <span class="command-list">(brk, sbrk, mmap, munmap, mprotect, mlock, munlock)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">Create User</button>
+                        <button type="button" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove User Modal -->
+    <div class="modal" id="removeUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Remove User</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="removeUserForm">
+                    <div class="form-group">
+                        <label for="removeUsername">Select User to Remove</label>
+                        <select id="removeUsername" required>
+                            <!-- Users will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmRemove">Type "DELETE" to confirm</label>
+                        <input type="text" id="confirmRemove" placeholder="Type DELETE to confirm" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn delete-btn">Remove User</button>
+                        <button type="button" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Permissions Modal -->
+    <div class="modal" id="changePermissionsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Change User Permissions</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="changePermissionsForm">
+                    <div class="form-group">
+                        <label for="permissionUsername">Select User</label>
+                        <select id="permissionUsername" required>
+                            <!-- Users will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Basic Permissions</label>
+                        <div class="permissions-list">
+                            <label class="permission-item">
+                                <input type="checkbox" name="permissions" value="read"> Read
+                            </label>
+                            <label class="permission-item">
+                                <input type="checkbox" name="permissions" value="write"> Write
+                            </label>
+                            <label class="permission-item">
+                                <input type="checkbox" name="permissions" value="execute"> Execute
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Command Permissions</label>
+                        <div class="command-permissions">
+                            <div class="basic-commands">
+                                <h4>Basic Commands (Always Available)</h4>
+                                <div class="command-list">ls, pwd, ps, netstat, top, users</div>
+                            </div>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_processControl"> Process Control
+                                <span class="command-list">(fork, exec, wait, exit, getpid, getppid, nice)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_directoryManagement"> Directory Management
+                                <span class="command-list">(mkdir, rmdir, chdir, getcwd, opendir, readdir, closedir)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_ipc"> Inter-Process Communication
+                                <span class="command-list">(pipe, shmget, shmat, shmdt, msgget, msgsnd, msgrcv, semget, semop, socket, bind, connect, send, recv, listen, accept)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_deviceManagement"> Device Management
+                                <span class="command-list">(ioctl, mknod, read, write)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_infoMaintenance"> Information Maintenance
+                                <span class="command-list">(gettimeofday, time, uname, getrlimit, setrlimit, sysinfo)</span>
+                            </label>
+                            <label class="command-permission-item">
+                                <input type="checkbox" id="command_memoryManagement"> Memory Management
+                                <span class="command-list">(brk, sbrk, mmap, munmap, mprotect, mlock, munlock)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">Update Permissions</button>
+                        <button type="button" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Verification Modal -->
+    <div class="modal" id="otpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Email Verification</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="otp-info">
+                    <p>A verification code has been sent to:</p>
+                    <p class="email-display" id="emailDisplay"></p>
+                </div>
+                <form id="otpForm">
+                    <div class="form-group">
+                        <label for="otp">Enter Verification Code</label>
+                        <div class="otp-input-container">
+                            <input type="text" id="otp" maxlength="6" placeholder="Enter 6-digit code" required>
+                            <button type="button" id="resendOtp" class="resend-btn" disabled>
+                                Resend Code (<span id="countdown">60</span>s)
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">Verify</button>
+                        <button type="button" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("-vRSLmDmf-X8-mkDd"); // Your EmailJS public key
+        })();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html> 
